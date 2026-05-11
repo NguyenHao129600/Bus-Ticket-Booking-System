@@ -1,42 +1,31 @@
-import knex from 'knex';
-
-const db = knex({
-    client: 'mysql',
-    connection: {
-        host: '127.0.0.1',
-        user: 'root',
-        password: '',
-        database: 'bus_booking'
-    }
-});
+import db from '../config/db';
 
 class User {
+  static getAll() {
+    return db.query('SELECT * FROM users');
+  }
 
-    static getAll() {
-        return db('users');
-    }
+  static getById(id) {
+    return db.query('SELECT * FROM users WHERE id = ?', [id]);
+  }
 
-    static getById(id) {
-        return db('users')
-            .where({ id })
-            .first();
-    }
+  static create(data) {
+    return db.query(
+      'INSERT INTO users (name, email, password, phone, role_id, created_at) VALUES (?, ?, ?, ?, ?, NOW())',
+      [data.name, data.email, data.password, data.phone, data.role_id]
+    );
+  }
 
-    static create(data) {
-        return db('users').insert(data);
-    }
+  static update(id, data) {
+    return db.query(
+      'UPDATE users SET name = ?, email = ?, phone = ?, role_id = ? WHERE id = ?',
+      [data.name, data.email, data.phone, data.role_id, id]
+    );
+  }
 
-    static update(id, data) {
-        return db('users')
-            .where({ id })
-            .update(data);
-    }
-
-    static delete(id) {
-        return db('users')
-            .where({ id })
-            .del();
-    }
+  static delete(id) {
+    return db.query('DELETE FROM users WHERE id = ?', [id]);
+  }
 }
 
 export default User;
